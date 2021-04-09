@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="mk">
+<head>
+    <meta charset="utf-8">
+    <title>ММС Вести - Wiget</title>
+    <link href="css/reset.css" rel="stylesheet" type="text/css">
+    <link href="css/widget.css?v=2" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="js/jquery.rss.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var n, t = $(".newsfeed-wrapper"); t.mouseleave(function () { e() }), t.mouseenter(function () { clearInterval(n) }), e()
+            var time = Math.floor(new Date().valueOf() / 10000);
+            $('#vesti').rss("https://mms.mk/feed/?t=" + time, {
+                limit: 20,
+                ssl: true,
+                host: "api.grid.mk/api/v1/feeds/json",
+                dateFormatFunction: function (date) {
+                    return moment(date).fromNow();
+                },
+                layoutTemplate: `{entries}`,
+                entryTemplate: `<a target="_blank" href="{url}">
+                                    <div class="newsfeed">
+                                        <div class="newsfeed-image-wrap">
+                                            <img src="https://images.weserv.nl/?w=50&h=50&t=square&a=attention&errorredirect={teaserImageUrl}&url={teaserImageUrl}" class="newsfeed-image" />
+                                        </div>
+                                        <div class="newsfeed-content">
+                                            <h2>{title}</h2><br/>
+                                        </div>
+                                    </div>
+                                </a>`
+            });
+            function e() {
+                n = setInterval(function () {
+                    var e = t.find("a").first();
+                    t.animate({ "margin-top": -e.height() },
+                        1e3,
+                        function () {
+                            e.remove(),
+                                t.css({ "margin-top": 0 }),
+                                t.append(e)
+                        })
+                },
+                    3e3
+                )
+            }
+            moment.locale("mk");
+        });
+    </script>
+</head>
+
+<body>
+    <div class=wrapper>
+        <div id=vesti class=newsfeed-wrapper style="margin-top: 10px;"></div>
+        <div class=footer>
+            <div></div>
+        </div>
+    </div>
+</body>
+
+</html>
